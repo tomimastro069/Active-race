@@ -55,7 +55,33 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> CurrentUser:
 # async def get_tenant(...) -> Tenant:
 #     pass
 
-# RESERVADO para C-03: require_permission (autorización basada en roles/permisos)
-# def require_permission(permission: str):
-#     pass
+from app.models.asignacion import Asignacion
+from app.repositories.asignacion import AsignacionRepository
 
+def require_permission(permission_name: str):
+    """
+    Guard de seguridad que verifica si el usuario actual posee la capacidad requerida
+    (o su variante contextual '_propio') resolviéndola en caliente de la base de datos.
+    """
+    async def dependency(
+        current_user: CurrentUser = Depends(get_current_user),
+        db: AsyncSession = Depends(get_db)
+    ) -> CurrentUser:
+        repo = AsignacionRepository(Asignacion, db, current_user.tenant_id)
+        effective_permissions = await repo.get_effective_permissions(current_user.id)
+        
+        # Validación directa
+        if permission_name in effective_permissions:
+            return current_user
+            
+        # Validación contextual: si tiene '_propio', se aprueba preliminarmente 
+        # y la lógica interna de los endpoints verificará la pertenencia del recurso.
+        own_permission_name = f"{permission_name}_propio"
+        if own_permission_name in effective_permissions:
+            return current_user
+            
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not enough permissions"
+        )
+    return dependency

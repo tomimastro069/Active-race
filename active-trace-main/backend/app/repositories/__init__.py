@@ -1,5 +1,12 @@
 from app.repositories.base import BaseRepository
 from app.repositories.usuario import UsuarioRepository
 from app.repositories.token_refresco import TokenRefrescoRepository
+from app.repositories.rol import RolRepository
+from app.repositories.permiso import PermisoRepository
+from app.repositories.rol_permiso import RolPermisoRepository
+from app.repositories.asignacion import AsignacionRepository
 
-__all__ = ['BaseRepository', 'UsuarioRepository', 'TokenRefrescoRepository']
+__all__ = [
+    'BaseRepository', 'UsuarioRepository', 'TokenRefrescoRepository',
+    'RolRepository', 'PermisoRepository', 'RolPermisoRepository', 'AsignacionRepository'
+]
