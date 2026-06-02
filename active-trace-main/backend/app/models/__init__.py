@@ -6,8 +6,9 @@ from app.models.rol import Rol
 from app.models.permiso import Permiso
 from app.models.rol_permiso import RolPermiso
 from app.models.asignacion import Asignacion
+from app.models.audit_log import AuditLog
 
 __all__ = [
     'TimestampedTenant', 'Base', 'Tenant', 'Usuario', 'TokenRefresco',
-    'Rol', 'Permiso', 'RolPermiso', 'Asignacion'
+    'Rol', 'Permiso', 'RolPermiso', 'Asignacion', 'AuditLog'
 ]

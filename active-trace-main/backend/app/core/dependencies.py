@@ -9,7 +9,7 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
         finally:
             await session.close()
 
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, status, Request
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt, JWTError
 from app.core.config import Settings
@@ -18,7 +18,7 @@ from uuid import UUID
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
 
-async def get_current_user(token: str = Depends(oauth2_scheme)) -> CurrentUser:
+async def get_current_user(request: Request = None, token: str = Depends(oauth2_scheme)) -> CurrentUser:
     """
     Decodifica el JWT (Stateless) y retorna el contexto de identidad (Golden Rule).
     No hit a DB para access token.
@@ -35,7 +35,8 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> CurrentUser:
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
         user_id: str = payload.get("sub")
         tenant_id: str = payload.get("tenant_id")
-        email: str = payload.get("email", "unknown")
+        email: str = payload.get("email", "unknown@example.com")
+        impersonated_sub: str = payload.get("impersonated_sub")
         
         if user_id is None or tenant_id is None:
             raise credentials_exception
@@ -43,11 +44,19 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> CurrentUser:
     except JWTError:
         raise credentials_exception
         
+    active_user_id = impersonated_sub if impersonated_sub else user_id
+    impersonated_by_id = user_id if impersonated_sub else None
+    
+    if request is not None:
+        request.state.actor_id = UUID(user_id)
+        request.state.impersonado_id = UUID(impersonated_sub) if impersonated_sub else None
+        
     return CurrentUser(
-        id=UUID(user_id),
+        id=UUID(active_user_id),
         tenant_id=UUID(tenant_id),
         email=email,
-        roles=payload.get("roles", [])
+        roles=payload.get("roles", []),
+        impersonated_by_id=UUID(impersonated_by_id) if impersonated_by_id else None
     )
 
 

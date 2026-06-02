@@ -38,9 +38,13 @@ class Enroll2FAResponse(BaseModel):
 class Enable2FARequest(BaseModel):
     code: str
 
+class ImpersonateRequest(BaseModel):
+    usuario_id: UUID
+
 class CurrentUser(BaseModel):
     id: UUID
     tenant_id: UUID
     email: EmailStr
     # roles se obtienen en C-07/C-04. Lo dejamos vacío por ahora para cumplir la firma.
     roles: List[str] = []
+    impersonated_by_id: Optional[UUID] = None

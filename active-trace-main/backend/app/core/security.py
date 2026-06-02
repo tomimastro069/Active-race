@@ -148,11 +148,13 @@ def verify_password(password: str, hash: str) -> bool:
     return pwd_context.verify(password, hash)
 
 
-def create_access_token(data: dict, expires_minutes: int = 15) -> str:
+def create_access_token(data: dict, expires_minutes: int = 15, impersonated_sub: str = None) -> str:
     settings = Settings()
     to_encode = data.copy()
     expire = datetime.utcnow() + timedelta(minutes=expires_minutes)
     to_encode.update({"exp": expire})
+    if impersonated_sub:
+        to_encode.update({"impersonated_sub": impersonated_sub})
     return jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
 
 

@@ -50,7 +50,7 @@ class Asignacion(Base, TimestampedTenant):
 
     responsable_id = Column(
         UUID(as_uuid=True),
-        ForeignKey('usuario.id', ondelete="SET_NULL"),
+        ForeignKey('usuario.id', ondelete="SET NULL"),
         nullable=True,
         doc="Usuario coordinador o supervisor responsable."
     )

@@ -81,7 +81,7 @@ def upgrade() -> None:
         sa.Column('updated_at', sa.DateTime(), nullable=False, server_default=sa.func.now()),
         sa.Column('deleted_at', sa.DateTime(), nullable=True),
         sa.ForeignKeyConstraint(['rol_id'], ['rol.id'], ondelete='RESTRICT'),
-        sa.ForeignKeyConstraint(['responsable_id'], ['usuario.id'], ondelete='SET_NULL'),
+        sa.ForeignKeyConstraint(['responsable_id'], ['usuario.id'], ondelete='SET NULL'),
         sa.ForeignKeyConstraint(['usuario_id'], ['usuario.id'], ondelete='CASCADE'),
         sa.PrimaryKeyConstraint('id')
     )

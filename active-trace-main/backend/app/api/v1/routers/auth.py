@@ -2,13 +2,14 @@ from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Optional
 
-from app.core.database import get_db
+from app.core.dependencies import get_current_user, get_db
 from app.schemas.auth import (
     LoginRequest, RefreshRequest, Verify2FARequest, Token, CurrentUser,
-    ForgotRequest, ResetRequest, Enroll2FAResponse, Enable2FARequest
+    ForgotRequest, ResetRequest, Enroll2FAResponse, Enable2FARequest,
+    ImpersonateRequest
 )
 from app.services.auth import AuthService, login_rate_limiter
-from app.core.dependencies import get_current_user
+from app.core.dependencies import get_current_user, require_permission
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -141,3 +142,70 @@ async def logout(
     auth_service = AuthService(db)
     await auth_service.revoke_token(request.refresh_token, current_user.tenant_id)
     return None
+
+@router.post("/impersonate", response_model=Token)
+async def impersonate(
+    request: Request,
+    payload: ImpersonateRequest,
+    current_user: CurrentUser = Depends(require_permission("impersonacion:usar")),
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Inicia la impersonación de un usuario por parte de un administrador o personal autorizado.
+    """
+    from app.repositories.usuario import UsuarioRepository
+    from app.models.usuario import Usuario
+    
+    user_repo = UsuarioRepository(Usuario, db, current_user.tenant_id)
+    target_user = await user_repo.get_by_id(payload.usuario_id)
+    if not target_user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Target user not found or belongs to another tenant"
+        )
+        
+    if target_user.estado != "Activo":
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Cannot impersonate an inactive user"
+        )
+        
+    # Obtener roles del usuario objetivo para el token
+    from app.models.asignacion import Asignacion
+    from app.repositories.asignacion import AsignacionRepository
+    asignacion_repo = AsignacionRepository(Asignacion, db, current_user.tenant_id)
+    target_roles = await asignacion_repo.get_active_roles(target_user.id)
+    
+    # Generar token con claim de impersonacion
+    from app.core.security import create_access_token
+    token_data = {
+        "sub": str(current_user.id),  # Actor real (quien impersona)
+        "tenant_id": str(current_user.tenant_id),
+        "email": target_user.email,   # Email del suplantado para mantener get_current_user stateless
+        "roles": target_roles
+    }
+    
+    access_token = create_access_token(
+        data=token_data,
+        expires_minutes=10,
+        impersonated_sub=str(target_user.id)
+    )
+    
+    # Auditar el inicio de la impersonación
+    from app.services.audit import AuditService
+    audit_service = AuditService(db, current_user.tenant_id)
+    await audit_service.log_action(
+        actor_id=current_user.id,
+        impersonado_id=target_user.id,
+        accion="IMPERSONACION_INICIAR",
+        ip=request.client.host if request.client else "127.0.0.1",
+        user_agent=request.headers.get("user-agent"),
+        detalle={"msg": f"Admin {current_user.email} inició impersonación de {target_user.email}"}
+    )
+    
+    await db.commit()
+    
+    return Token(
+        access_token=access_token,
+        token_type="bearer"
+    )

@@ -5,8 +5,10 @@ from app.repositories.rol import RolRepository
 from app.repositories.permiso import PermisoRepository
 from app.repositories.rol_permiso import RolPermisoRepository
 from app.repositories.asignacion import AsignacionRepository
+from app.repositories.audit_log import AuditLogRepository
 
 __all__ = [
     'BaseRepository', 'UsuarioRepository', 'TokenRefrescoRepository',
-    'RolRepository', 'PermisoRepository', 'RolPermisoRepository', 'AsignacionRepository'
+    'RolRepository', 'PermisoRepository', 'RolPermisoRepository',
+    'AsignacionRepository', 'AuditLogRepository'
 ]
