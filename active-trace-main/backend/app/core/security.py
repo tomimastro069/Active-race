@@ -130,3 +130,32 @@ def validate_encryption_key(key: str) -> bool:
         )
     
     return True
+
+
+# --- Auth utilities: Password Hashing & JWT ---
+from passlib.context import CryptContext
+import jwt
+from datetime import datetime, timedelta
+
+pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
+
+
+def hash_password(password: str) -> str:
+    return pwd_context.hash(password)
+
+
+def verify_password(password: str, hash: str) -> bool:
+    return pwd_context.verify(password, hash)
+
+
+def create_access_token(data: dict, expires_minutes: int = 15) -> str:
+    settings = Settings()
+    to_encode = data.copy()
+    expire = datetime.utcnow() + timedelta(minutes=expires_minutes)
+    to_encode.update({"exp": expire})
+    return jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+
+
+def decode_access_token(token: str) -> dict:
+    settings = Settings()
+    return jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])

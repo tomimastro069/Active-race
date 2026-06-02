@@ -6,6 +6,8 @@ class Settings(BaseSettings):
     SECRET_KEY: str = Field(..., min_length=32)
     ENCRYPTION_KEY: str = Field(..., min_length=32, max_length=32)
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 15
+    ALGORITHM: str = "HS256"
+    REFRESH_TOKEN_EXPIRE_DAYS: int = 7
 
     model_config = SettingsConfigDict(
         env_file=".env",
