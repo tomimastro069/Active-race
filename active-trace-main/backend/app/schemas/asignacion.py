@@ -46,3 +46,45 @@ class AsignacionResponse(AsignacionBase):
     model_config = ConfigDict(
         from_attributes=True
     )
+
+
+class AsignacionMasivaCreate(BaseModel):
+    usuario_ids: List[UUID]
+    rol_id: UUID
+    materia_id: Optional[UUID] = None
+    carrera_id: Optional[UUID] = None
+    cohorte_id: Optional[UUID] = None
+    comisiones: Optional[List[str]] = None
+    responsable_id: Optional[UUID] = None
+    desde: datetime
+    hasta: Optional[datetime] = None
+
+    model_config = ConfigDict(
+        extra="forbid"
+    )
+
+
+class EquipoClonarRequest(BaseModel):
+    source_materia_id: UUID
+    source_cohorte_id: UUID
+    target_materia_id: UUID
+    target_cohorte_id: UUID
+    nuevo_desde: datetime
+    nuevo_hasta: Optional[datetime] = None
+
+    model_config = ConfigDict(
+        extra="forbid"
+    )
+
+
+class AsignacionVigenciaUpdate(BaseModel):
+    materia_id: Optional[UUID] = None
+    carrera_id: Optional[UUID] = None
+    cohorte_id: Optional[UUID] = None
+    desde: Optional[datetime] = None
+    hasta: Optional[datetime] = None
+
+    model_config = ConfigDict(
+        extra="forbid"
+    )
+

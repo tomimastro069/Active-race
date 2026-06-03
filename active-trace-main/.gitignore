@@ -15,6 +15,5 @@ Thumbs.db
 node_modules
 .env
 .agent
-.engram
 
 __pycache__/
