@@ -9,6 +9,15 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
 
+    # SMTP settings (C-12: comunicaciones-cola-worker)
+    SMTP_HOST: str = "localhost"
+    SMTP_PORT: int = 587
+    SMTP_USER: str = ""
+    SMTP_PASSWORD: str = ""
+    SMTP_FROM: str = "noreply@activia-trace.local"
+    WORKER_POLL_INTERVAL_SECONDS: int = 30
+    MAX_INTENTOS: int = 3
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",

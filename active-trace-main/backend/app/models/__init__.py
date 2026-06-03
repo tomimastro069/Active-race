@@ -13,10 +13,12 @@ from app.models.cohorte import Cohorte
 from app.models.padron import VersionPadron, EntradaPadron
 from app.models.calificacion import Calificacion
 from app.models.umbral import UmbralMateria
+from app.models.comunicacion import Comunicacion, EstadoComunicacion
 
 __all__ = [
     'TimestampedTenant', 'Base', 'Tenant', 'Usuario', 'TokenRefresco',
     'Rol', 'Permiso', 'RolPermiso', 'Asignacion', 'AuditLog',
     'Carrera', 'Materia', 'Cohorte', 'VersionPadron', 'EntradaPadron',
-    'Calificacion', 'UmbralMateria'
+    'Calificacion', 'UmbralMateria',
+    'Comunicacion', 'EstadoComunicacion',
 ]

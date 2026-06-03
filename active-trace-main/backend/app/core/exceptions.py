@@ -1,3 +1,7 @@
 """
-RESERVADO para C-03/C-04: Excepciones personalizadas para el dominio y mapeadores de error HTTP de Clean Architecture.
+Custom domain exceptions for Clean Architecture HTTP error mapping.
 """
+
+
+class ServiceError(Exception):
+    """Domain/service-level error. Routers map this to HTTP 422 (or 409 for state conflicts)."""

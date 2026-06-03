@@ -23,7 +23,8 @@ dependencies = [
     "PyJWT>=2.0.0",
     "passlib[argon2]>=1.7.4",
     "tenacity>=8.2.0",
-    "python-multipart>=0.0.30"
+    "python-multipart>=0.0.30",
+    "aiosmtplib>=3.0.0"
 ]
 
 [project.optional-dependencies]
