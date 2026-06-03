@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from uuid import UUID
 from datetime import datetime
 from sqlalchemy import select, or_
@@ -62,3 +62,36 @@ class AsignacionRepository(BaseRepository[Asignacion]):
 
         result = await self.session.execute(query)
         return list(result.scalars().all())
+
+    async def list_assignments(
+        self,
+        usuario_id: Optional[UUID] = None,
+        rol_id: Optional[UUID] = None,
+        materia_id: Optional[UUID] = None,
+        carrera_id: Optional[UUID] = None,
+        cohorte_id: Optional[UUID] = None,
+        skip: int = 0,
+        limit: int = 100
+    ) -> List[Asignacion]:
+        """
+        Lista asignaciones con filtros opcionales.
+        La consulta está automáticamente restringida al tenant_id del repositorio.
+        """
+        query = select(Asignacion)
+        if usuario_id:
+            query = query.where(Asignacion.usuario_id == usuario_id)
+        if rol_id:
+            query = query.where(Asignacion.rol_id == rol_id)
+        if materia_id:
+            query = query.where(Asignacion.materia_id == materia_id)
+        if carrera_id:
+            query = query.where(Asignacion.carrera_id == carrera_id)
+        if cohorte_id:
+            query = query.where(Asignacion.cohorte_id == cohorte_id)
+        
+        query = self._apply_tenant_scope(query)
+        query = query.offset(skip).limit(limit)
+        
+        result = await self.session.execute(query)
+        return list(result.scalars().all())
+

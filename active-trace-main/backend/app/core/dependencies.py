@@ -64,9 +64,6 @@ async def get_current_user(request: Request = None, token: str = Depends(oauth2_
 # async def get_tenant(...) -> Tenant:
 #     pass
 
-from app.models.asignacion import Asignacion
-from app.repositories.asignacion import AsignacionRepository
-
 def require_permission(permission_name: str):
     """
     Guard de seguridad que verifica si el usuario actual posee la capacidad requerida
@@ -76,7 +73,10 @@ def require_permission(permission_name: str):
         current_user: CurrentUser = Depends(get_current_user),
         db: AsyncSession = Depends(get_db)
     ) -> CurrentUser:
+        from app.models.asignacion import Asignacion
+        from app.repositories.asignacion import AsignacionRepository
         repo = AsignacionRepository(Asignacion, db, current_user.tenant_id)
+
         effective_permissions = await repo.get_effective_permissions(current_user.id)
         
         # Validación directa

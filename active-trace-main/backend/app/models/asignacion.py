@@ -67,5 +67,18 @@ class Asignacion(Base, TimestampedTenant):
         doc="Fin de la vigencia de la asignación (nulo = abierta)."
     )
 
+    @property
+    def estado_vigencia(self) -> str:
+        """
+        Retorna 'Vigente' si la asignación está activa temporalmente,
+        caso contrario 'Vencida'.
+        """
+        from datetime import datetime
+        now = datetime.utcnow()
+        if self.desde <= now and (self.hasta is None or now <= self.hasta):
+            return "Vigente"
+        return "Vencida"
+
     def __repr__(self):
         return f"<Asignacion(id={self.id!r}, usuario_id={self.usuario_id!r}, rol_id={self.rol_id!r})>"
+

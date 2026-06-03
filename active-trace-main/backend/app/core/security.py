@@ -132,6 +132,23 @@ def validate_encryption_key(key: str) -> bool:
     return True
 
 
+def generate_email_hash(email: str) -> str:
+    """
+    Generate a deterministic HMAC-SHA256 hash of the normalized email
+    using the ENCRYPTION_KEY as the salt.
+    """
+    if not email:
+        return ""
+    import hmac
+    import hashlib
+    settings = Settings()
+    normalized_email = email.lower().strip()
+    # ENCRYPTION_KEY is used as the key for HMAC
+    key = settings.ENCRYPTION_KEY.encode('utf-8') if isinstance(settings.ENCRYPTION_KEY, str) else settings.ENCRYPTION_KEY
+    return hmac.new(key, normalized_email.encode('utf-8'), hashlib.sha256).hexdigest()
+
+
+
 # --- Auth utilities: Password Hashing & JWT ---
 from passlib.context import CryptContext
 import jwt

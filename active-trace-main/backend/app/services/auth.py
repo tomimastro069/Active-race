@@ -70,8 +70,10 @@ class AuthService:
 
     async def authenticate_user(self, email: str, password: str) -> Optional[Token]:
         from sqlalchemy import select
-        # Consulta unscoped porque no conocemos el tenant inicialmente
-        query = select(Usuario).where(Usuario.email == email, Usuario.deleted_at.is_(None))
+        from app.core.security import generate_email_hash
+        # Consulta unscoped porque no conocemos el tenant inicialmente, usando email_hash
+        email_hash = generate_email_hash(email)
+        query = select(Usuario).where(Usuario.email_hash == email_hash, Usuario.deleted_at.is_(None))
         result = await self.db.execute(query)
         user = result.scalars().first()
 
@@ -215,7 +217,9 @@ class AuthService:
 
     async def forgot_password(self, email: str) -> Optional[str]:
         from sqlalchemy import select
-        query = select(Usuario).where(Usuario.email == email, Usuario.deleted_at.is_(None))
+        from app.core.security import generate_email_hash
+        email_hash = generate_email_hash(email)
+        query = select(Usuario).where(Usuario.email_hash == email_hash, Usuario.deleted_at.is_(None))
         result = await self.db.execute(query)
         user = result.scalars().first()
         if not user:
