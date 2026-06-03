@@ -12,6 +12,8 @@ from app.api.v1.routers.usuarios import router as usuarios_router
 from app.api.v1.routers.asignaciones import router as asignaciones_router
 from app.api.v1.routers.equipos import router as equipos_router
 from app.api.v1.routers.padron import router as padron_router
+from app.api.v1.routers.calificaciones import router as calificaciones_router
+from app.api.v1.routers.analisis import router as analisis_router
 from app.core.database import engine
 
 # Monitoring
@@ -52,5 +54,7 @@ app.include_router(usuarios_router, prefix="/api/v1")
 app.include_router(asignaciones_router, prefix="/api/v1")
 app.include_router(equipos_router, prefix="/api/v1")
 app.include_router(padron_router, prefix="/api/v1")
-app.include_router(prometheus_router)
+app.include_router(calificaciones_router, prefix="/api/v1")
+app.include_router(analisis_router, prefix="/api/v1")
+
 
