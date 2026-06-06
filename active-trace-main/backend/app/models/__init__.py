@@ -14,6 +14,8 @@ from app.models.padron import VersionPadron, EntradaPadron
 from app.models.calificacion import Calificacion
 from app.models.umbral import UmbralMateria
 from app.models.comunicacion import Comunicacion, EstadoComunicacion
+from app.models.encuentro import SlotEncuentro, InstanciaEncuentro, DiaSemanaEnum, EstadoEncuentroEnum
+from app.models.guardia import Guardia, EstadoGuardiaEnum
 
 __all__ = [
     'TimestampedTenant', 'Base', 'Tenant', 'Usuario', 'TokenRefresco',
@@ -21,4 +23,6 @@ __all__ = [
     'Carrera', 'Materia', 'Cohorte', 'VersionPadron', 'EntradaPadron',
     'Calificacion', 'UmbralMateria',
     'Comunicacion', 'EstadoComunicacion',
+    'SlotEncuentro', 'InstanciaEncuentro', 'DiaSemanaEnum', 'EstadoEncuentroEnum',
+    'Guardia', 'EstadoGuardiaEnum',
 ]
