@@ -66,5 +66,7 @@ app.include_router(encuentros_router, prefix="/api/v1")
 app.include_router(guardias_router, prefix="/api/v1")
 app.include_router(evaluaciones_router, prefix="/api/v1")
 app.include_router(avisos_router, prefix="/api/v1/avisos")
+from app.api.v1.routers.tareas import router as tareas_router
+app.include_router(tareas_router, prefix="/api/v1/tareas")
 
 

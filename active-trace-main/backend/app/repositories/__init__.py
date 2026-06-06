@@ -12,11 +12,13 @@ from app.repositories.cohorte import CohorteRepository
 from app.repositories.padron_repository import PadronRepository
 from app.repositories.calificacion import CalificacionRepository
 from app.repositories.umbral import UmbralMateriaRepository
+from app.repositories.tarea_repository import TareaRepository, ComentarioTareaRepository
 
 __all__ = [
     'BaseRepository', 'UsuarioRepository', 'TokenRefrescoRepository',
     'RolRepository', 'PermisoRepository', 'RolPermisoRepository',
     'AsignacionRepository', 'AuditLogRepository',
     'CarreraRepository', 'MateriaRepository', 'CohorteRepository',
-    'PadronRepository', 'CalificacionRepository', 'UmbralMateriaRepository'
+    'PadronRepository', 'CalificacionRepository', 'UmbralMateriaRepository',
+    'TareaRepository', 'ComentarioTareaRepository'
 ]
