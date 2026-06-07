@@ -1,5 +1,6 @@
 api
 core
+crud
 integrations
 models
 repositories

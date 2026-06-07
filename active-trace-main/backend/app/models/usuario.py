@@ -123,6 +123,12 @@ class Usuario(Base, TimestampedTenant):
         doc="Indica si el usuario emite facturas."
     )
 
+    modalidad_cobro = Column(
+        String(100),
+        nullable=True,
+        doc="Modalidad de cobro del usuario."
+    )
+
     __table_args__ = (
         UniqueConstraint('tenant_id', 'email_hash', name='uq_usuario_tenant_email'),
         Index('idx_usuario_tenant_email', 'tenant_id', 'email_hash'),

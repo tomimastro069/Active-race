@@ -17,6 +17,7 @@ class UsuarioBase(BaseModel):
     legajo: Optional[str] = Field(None, max_length=50)
     legajo_profesional: Optional[str] = Field(None, max_length=50)
     facturador: bool = Field(False)
+    modalidad_cobro: Optional[str] = Field(None, max_length=100)
 
     model_config = ConfigDict(
         extra="forbid",
@@ -38,6 +39,7 @@ class UsuarioCreate(BaseModel):
     legajo: Optional[str] = None
     legajo_profesional: Optional[str] = None
     facturador: Optional[bool] = False
+    modalidad_cobro: Optional[str] = None
 
     model_config = ConfigDict(
         extra="forbid"
@@ -56,6 +58,7 @@ class UsuarioUpdate(BaseModel):
     legajo: Optional[str] = None
     legajo_profesional: Optional[str] = None
     facturador: Optional[bool] = None
+    modalidad_cobro: Optional[str] = None
 
     model_config = ConfigDict(
         extra="forbid"
@@ -77,6 +80,7 @@ class UsuarioResponse(BaseModel):
     legajo: Optional[str] = None
     legajo_profesional: Optional[str] = None
     facturador: bool
+    modalidad_cobro: Optional[str] = None
     created_at: datetime
     updated_at: datetime
 

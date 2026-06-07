@@ -45,6 +45,7 @@ class UsuarioService:
             legajo=user.legajo,
             legajo_profesional=user.legajo_profesional,
             facturador=user.facturador,
+            modalidad_cobro=user.modalidad_cobro,
             created_at=user.created_at,
             updated_at=user.updated_at
         )
@@ -76,7 +77,8 @@ class UsuarioService:
             regional=schema.regional,
             legajo=schema.legajo,
             legajo_profesional=schema.legajo_profesional,
-            facturador=schema.facturador or False
+            facturador=schema.facturador or False,
+            modalidad_cobro=schema.modalidad_cobro
         )
 
         usuario = await self.repo.create(usuario)
@@ -100,7 +102,7 @@ class UsuarioService:
         # Mapear cambios
         updatable_fields = [
             "nombre", "apellidos", "dni", "cuil", "cbu", "alias_cbu",
-            "banco", "regional", "legajo", "legajo_profesional", "facturador"
+            "banco", "regional", "legajo", "legajo_profesional", "facturador", "modalidad_cobro"
         ]
 
         for field in updatable_fields:

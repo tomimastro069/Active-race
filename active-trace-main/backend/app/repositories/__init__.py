@@ -13,6 +13,7 @@ from app.repositories.padron_repository import PadronRepository
 from app.repositories.calificacion import CalificacionRepository
 from app.repositories.umbral import UmbralMateriaRepository
 from app.repositories.tarea_repository import TareaRepository, ComentarioTareaRepository
+from app.repositories.mensajeria import MensajeriaRepository
 
 __all__ = [
     'BaseRepository', 'UsuarioRepository', 'TokenRefrescoRepository',
@@ -20,5 +21,6 @@ __all__ = [
     'AsignacionRepository', 'AuditLogRepository',
     'CarreraRepository', 'MateriaRepository', 'CohorteRepository',
     'PadronRepository', 'CalificacionRepository', 'UmbralMateriaRepository',
-    'TareaRepository', 'ComentarioTareaRepository'
+    'TareaRepository', 'ComentarioTareaRepository',
+    'MensajeriaRepository'
 ]

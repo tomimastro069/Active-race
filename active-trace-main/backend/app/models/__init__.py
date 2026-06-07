@@ -19,6 +19,7 @@ from app.models.guardia import Guardia, EstadoGuardiaEnum
 from app.models.evaluacion import Evaluacion, ReservaEvaluacion, ResultadoEvaluacion, EvaluacionTipoEnum, EstadoReservaEnum
 from app.models.aviso import Aviso, AcknowledgmentAviso, AlcanceEnum
 from app.models.tarea import Tarea, ComentarioTarea, EstadoTareaEnum
+from app.models.mensajeria import Thread, Message
 
 __all__ = [
     'TimestampedTenant', 'Base', 'Tenant', 'Usuario', 'TokenRefresco',
@@ -31,4 +32,5 @@ __all__ = [
     'Evaluacion', 'ReservaEvaluacion', 'ResultadoEvaluacion', 'EvaluacionTipoEnum', 'EstadoReservaEnum',
     'Aviso', 'AcknowledgmentAviso', 'AlcanceEnum',
     'Tarea', 'ComentarioTarea', 'EstadoTareaEnum',
+    'Thread', 'Message',
 ]
