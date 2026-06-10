@@ -88,7 +88,10 @@ class MensajeriaService:
             detalle={"thread_id": str(thread.id), "asunto": asunto}
         )
 
-        return thread
+        # Recargar con eager loading (miembros, mensajes -> remitente): la instancia
+        # recién creada no tiene la relación `mensajes` cargada y accederla después
+        # dispararía un lazy-load síncrono (MissingGreenlet bajo AsyncSession).
+        return await self.repo.get_thread_by_id_and_member(thread.id, creador_id)
 
     async def reply_to_thread(self, thread_id: UUID, remitente_id: UUID, contenido: str) -> Message:
         """
@@ -109,6 +112,9 @@ class MensajeriaService:
             contenido=contenido
         )
         message = await self.repo.save_message(message)
+        # Cargar `remitente` ahora: message_to_response lo necesita y el acceso lazy
+        # está prohibido bajo AsyncSession (MissingGreenlet).
+        await self.db.refresh(message, ["remitente"])
 
         # Actualizar timestamp del hilo para ordenación
         from datetime import datetime
