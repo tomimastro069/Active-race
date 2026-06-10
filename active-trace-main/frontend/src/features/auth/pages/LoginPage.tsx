@@ -21,7 +21,7 @@ type TwoFactorFormValues = z.infer<typeof twoFactorSchema>;
 
 export const LoginPage: React.FC = () => {
   const [step, setStep] = useState<'login' | '2fa' | 'recovery'>('login');
-  const [email, setEmail] = useState('');
+  const [tempToken, setTempToken] = useState('');
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const { loginUser } = useAuth();
@@ -43,7 +43,8 @@ export const LoginPage: React.FC = () => {
     try {
       const response = await authService.login({ email: data.email, password: data.password });
       if (response.requires_2fa) {
-        setEmail(data.email);
+        // El backend devuelve un token temporal que habilita /auth/verify-2fa
+        setTempToken(response.access_token);
         setStep('2fa');
       } else {
         const user = await authService.me();
@@ -62,7 +63,7 @@ export const LoginPage: React.FC = () => {
   const onTwoFactorSubmit = async (data: TwoFactorFormValues) => {
     setErrorMsg(null);
     try {
-      const response = await authService.login({ email, token_2fa: data.token_2fa });
+      const response = await authService.verify2fa(tempToken, data.token_2fa);
       const user = await authService.me();
       loginUser(user, response.access_token);
       navigate(from, { replace: true });
