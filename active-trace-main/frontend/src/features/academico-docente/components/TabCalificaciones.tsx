@@ -10,16 +10,19 @@ export const TabCalificaciones = () => {
   const [preview, setPreview] = useState<PreviewCalificaciones | null>(null);
 
   const previewMutation = useMutation({
-    mutationFn: (file: File) => academicoService.previewCalificaciones(materiaId, cohorteId, file),
+    mutationFn: (file: File) => academicoService.previewCalificaciones(file),
     onSuccess: (data) => setPreview(data),
   });
 
   const importMutation = useMutation({
-    mutationFn: () => academicoService.importarCalificaciones(materiaId, cohorteId, preview?.actividades || [], file!),
-    onSuccess: () => {
+    mutationFn: () => academicoService.importarCalificaciones(materiaId, cohorteId, file!),
+    onSuccess: (data) => {
       setFile(null);
       setPreview(null);
-      alert('Calificaciones importadas con éxito');
+      const detalle = data.unmatched_emails.length > 0
+        ? `\nEmails sin match en el padrón: ${data.unmatched_emails.join(', ')}`
+        : '';
+      alert(`Se importaron ${data.imported_count} calificaciones.${detalle}`);
     }
   });
 
@@ -76,12 +79,15 @@ export const TabCalificaciones = () => {
 
         {preview && (
           <div className="mt-6">
-            <h4 className="font-medium text-slate-700 mb-2">Actividades Detectadas</h4>
-            <div className="flex flex-wrap gap-2 mb-4">
-              {preview.actividades.map(act => (
+            <h4 className="font-medium text-slate-700 mb-2">Columnas Detectadas</h4>
+            <div className="flex flex-wrap gap-2 mb-2">
+              {preview.headers.map(act => (
                 <span key={act} className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs">{act}</span>
               ))}
             </div>
+            <p className="text-sm text-slate-500 mb-4">
+              Se estima importar {preview.estimated_grades_count} calificaciones.
+            </p>
             <button
               onClick={() => importMutation.mutate()}
               disabled={importMutation.isPending}

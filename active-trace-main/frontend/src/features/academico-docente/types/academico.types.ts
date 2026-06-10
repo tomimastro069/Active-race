@@ -1,3 +1,6 @@
+// Tipos transcritos de los schemas Pydantic reales del backend
+// (app/schemas/analisis.py, app/schemas/calificacion.py, app/schemas/umbral.py).
+
 export interface CommissionContextType {
   materiaId: string;
   cohorteId: string;
@@ -5,47 +8,58 @@ export interface CommissionContextType {
   setUmbralPct: (val: number) => void;
 }
 
+// GET /analisis/atrasados -> AlumnoAtrasadoResponse
 export interface AlumnoAtrasado {
   padron_id: string;
   nombre: string;
   apellido: string;
-  email: string;
-  tareas_faltantes: string[];
-  nota_actual?: number;
-  estado_general: string;
+  actividad: string;
+  motivo: string;
 }
 
+// GET /analisis/ranking -> RankingResponse
 export interface RankingItem {
   padron_id: string;
   nombre: string;
   apellido: string;
-  tareas_aprobadas: number;
-  promedio_final: number;
+  actividades_aprobadas: number;
 }
 
+// GET/POST /calificaciones/umbral -> UmbralMateriaResponse
 export interface ConfiguracionUmbral {
-  umbral_aprobacion: number;
+  umbral_pct: number;
+  valores_aprobatorios?: string[] | null;
 }
 
+// POST /calificaciones/preview-csv -> CalificacionPreviewResponse
 export interface PreviewCalificaciones {
-  actividades: string[];
-  registros: any[]; // Depends on CSV structure
+  headers: string[];
+  rows: Record<string, unknown>[];
+  estimated_grades_count: number;
 }
 
+// POST /calificaciones/import-csv -> CalificacionImportResponse
+export interface ImportResultado {
+  imported_count: number;
+  unmatched_emails: string[];
+}
+
+// GET /analisis/monitor -> MonitorResponse (una fila por alumno x actividad)
 export interface MonitorItem {
   padron_id: string;
   nombre: string;
   apellido: string;
-  comision_id: string;
-  regional: string;
-  porcentaje_cumplimiento: number;
+  actividad: string;
+  estado: string;
+  nota?: number | string | null;
+  importado_at?: string | null;
 }
 
+// GET /analisis/tps-sin-corregir -> TPSinCorregirResponse
 export interface EntregaPendiente {
   padron_id: string;
   nombre: string;
   apellido: string;
-  tarea: string;
-  fecha_entrega: string;
+  actividad: string;
+  importado_at?: string | null;
 }
-

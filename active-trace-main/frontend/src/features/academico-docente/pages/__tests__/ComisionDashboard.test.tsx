@@ -21,7 +21,7 @@ const queryClient = new QueryClient({
 
 describe('ComisionDashboard', () => {
   it('renders correctly with url params', async () => {
-    vi.mocked(academicoService.getUmbral).mockResolvedValueOnce({ umbral_aprobacion: 65 });
+    vi.mocked(academicoService.getUmbral).mockResolvedValueOnce({ umbral_pct: 65 });
 
     render(
       <QueryClientProvider client={queryClient}>

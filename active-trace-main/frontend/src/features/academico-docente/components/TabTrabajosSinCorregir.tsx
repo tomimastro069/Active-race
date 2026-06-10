@@ -35,10 +35,10 @@ export const TabTrabajosSinCorregir = () => {
   const handleExportCSV = () => {
     if (pendientes.length === 0) return;
 
-    const headers = ['padron_id', 'nombre', 'apellido', 'tarea', 'fecha_entrega'];
+    const headers = ['padron_id', 'nombre', 'apellido', 'actividad', 'importado_at'];
     const csvContent = [
       headers.join(','),
-      ...pendientes.map(p => `${p.padron_id},${p.nombre},${p.apellido},${p.tarea},${p.fecha_entrega}`)
+      ...pendientes.map(p => `${p.padron_id},${p.nombre},${p.apellido},${p.actividad},${p.importado_at ?? ''}`)
     ].join('\n');
 
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -100,8 +100,8 @@ export const TabTrabajosSinCorregir = () => {
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Padrón</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Alumno</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tarea</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha Entrega</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actividad</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Importado</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -109,8 +109,10 @@ export const TabTrabajosSinCorregir = () => {
                   <tr key={i}>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{p.padron_id}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{p.nombre} {p.apellido}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{p.tarea}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{p.fecha_entrega}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{p.actividad}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {p.importado_at ? new Date(p.importado_at).toLocaleDateString() : '—'}
+                    </td>
                   </tr>
                 ))}
               </tbody>

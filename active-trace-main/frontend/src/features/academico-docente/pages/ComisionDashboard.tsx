@@ -21,16 +21,16 @@ export const ComisionDashboard = () => {
   const [activeTab, setActiveTab] = useState<'calificaciones' | 'atrasados' | 'comunicaciones' | 'entregas'>('calificaciones');
 
   const { data: umbralData, refetch } = useQuery({
-    queryKey: ['umbral', materiaId, cohorteId],
-    queryFn: () => academicoService.getUmbral(materiaId!, cohorteId!),
-    enabled: !!materiaId && !!cohorteId,
+    queryKey: ['umbral', materiaId],
+    queryFn: () => academicoService.getUmbral(materiaId!),
+    enabled: !!materiaId,
   });
 
   const [umbralPct, setUmbralPct] = useState(60);
 
   useEffect(() => {
-    if (umbralData?.umbral_aprobacion !== undefined) {
-      setUmbralPct(umbralData.umbral_aprobacion);
+    if (umbralData?.umbral_pct !== undefined) {
+      setUmbralPct(umbralData.umbral_pct);
     }
   }, [umbralData]);
 
@@ -44,7 +44,7 @@ export const ComisionDashboard = () => {
     umbralPct,
     setUmbralPct: async (val: number) => {
       setUmbralPct(val);
-      await academicoService.setUmbral(materiaId, cohorteId, val);
+      await academicoService.setUmbral(materiaId, val);
       refetch();
     }
   };

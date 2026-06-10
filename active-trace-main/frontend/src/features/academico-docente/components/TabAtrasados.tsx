@@ -24,31 +24,22 @@ export const TabAtrasados = () => {
               <tr>
                 <th className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900">Padrón</th>
                 <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Alumno</th>
-                <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Estado General</th>
-                <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Nota Actual</th>
-                <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Tareas Faltantes</th>
+                <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Actividad</th>
+                <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Motivo</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 bg-white">
-              {atrasados.map((alumno) => (
-                <tr key={alumno.padron_id} className="hover:bg-gray-50">
+              {atrasados.map((alumno, idx) => (
+                <tr key={`${alumno.padron_id}-${alumno.actividad}-${idx}`} className="hover:bg-gray-50">
                   <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-gray-900">{alumno.padron_id}</td>
                   <td className="whitespace-nowrap px-3 py-4 text-sm font-medium text-gray-900">
                     {alumno.apellido}, {alumno.nombre}
-                    <div className="text-xs text-gray-500 font-normal">{alumno.email}</div>
                   </td>
+                  <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{alumno.actividad}</td>
                   <td className="whitespace-nowrap px-3 py-4 text-sm">
                     <span className="inline-flex rounded-full bg-red-100 px-2 text-xs font-semibold leading-5 text-red-800">
-                      {alumno.estado_general}
+                      {alumno.motivo}
                     </span>
-                  </td>
-                  <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{alumno.nota_actual ?? 'N/A'}%</td>
-                  <td className="px-3 py-4 text-sm text-gray-500">
-                    <ul className="list-disc pl-4">
-                      {alumno.tareas_faltantes.map((tarea, idx) => (
-                        <li key={idx}>{tarea}</li>
-                      ))}
-                    </ul>
                   </td>
                 </tr>
               ))}

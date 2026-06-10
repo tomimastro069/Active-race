@@ -3,58 +3,78 @@ import { useQuery } from '@tanstack/react-query';
 import { academicoService } from '../services/academico.service';
 
 export const MonitorSeguimientoPage = () => {
+  // El backend exige materia y cohorte (F2.8); los filtros son opcionales.
+  const [materiaId, setMateriaId] = useState('');
+  const [cohorteId, setCohorteId] = useState('');
   const [search, setSearch] = useState('');
-  const [comision, setComision] = useState('');
-  const [cumplimientoMax, setCumplimientoMax] = useState<number | undefined>(undefined);
+  const [estadoActividad, setEstadoActividad] = useState('');
 
   const { data: monitorItems, isLoading, isError } = useQuery({
-    queryKey: ['monitor', search, comision, cumplimientoMax],
-    queryFn: () => academicoService.getMonitor({ search, comision, cumplimientoMax }),
+    queryKey: ['monitor', materiaId, cohorteId, search, estadoActividad],
+    queryFn: () => academicoService.getMonitor(materiaId, cohorteId, {
+      search: search || undefined,
+      estado_actividad: estadoActividad || undefined,
+    }),
+    enabled: !!materiaId && !!cohorteId,
   });
 
   return (
     <div className="p-8 max-w-7xl mx-auto">
-      <h1 className="text-3xl font-bold text-slate-900 mb-6">Monitor de Seguimiento Transversal</h1>
-      
+      <h1 className="text-3xl font-bold text-slate-900 mb-6">Monitor de Seguimiento</h1>
+
       {/* Filtros */}
       <div className="bg-white p-4 rounded-lg shadow-sm border border-slate-200 mb-6 flex flex-wrap gap-4 items-end">
         <div>
+          <label className="block text-sm font-medium text-slate-700">Materia (ID)</label>
+          <input
+            type="text"
+            value={materiaId}
+            onChange={(e) => setMateriaId(e.target.value)}
+            className="mt-1 block rounded-md border-gray-300 shadow-sm border p-2 text-sm"
+            placeholder="UUID de la materia"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-slate-700">Cohorte (ID)</label>
+          <input
+            type="text"
+            value={cohorteId}
+            onChange={(e) => setCohorteId(e.target.value)}
+            className="mt-1 block rounded-md border-gray-300 shadow-sm border p-2 text-sm"
+            placeholder="UUID de la cohorte"
+          />
+        </div>
+        <div>
           <label className="block text-sm font-medium text-slate-700">Buscar (Nombre/Padrón)</label>
-          <input 
-            type="text" 
+          <input
+            type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="mt-1 block rounded-md border-gray-300 shadow-sm border p-2 text-sm"
-            placeholder="Ej: 12345"
+            placeholder="Ej: Pérez"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-700">Comisión</label>
-          <input 
-            type="text" 
-            value={comision}
-            onChange={(e) => setComision(e.target.value)}
-            className="mt-1 block rounded-md border-gray-300 shadow-sm border p-2 text-sm"
-            placeholder="Todas"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-slate-700">Cumplimiento Máx (%)</label>
-          <select 
-            value={cumplimientoMax || ''}
-            onChange={(e) => setCumplimientoMax(e.target.value ? Number(e.target.value) : undefined)}
-            className="mt-1 block rounded-md border-gray-300 shadow-sm border p-2 text-sm w-32 bg-white"
+          <label className="block text-sm font-medium text-slate-700">Estado de Actividad</label>
+          <select
+            value={estadoActividad}
+            onChange={(e) => setEstadoActividad(e.target.value)}
+            className="mt-1 block rounded-md border-gray-300 shadow-sm border p-2 text-sm w-40 bg-white"
           >
             <option value="">Cualquiera</option>
-            <option value="50">&lt;= 50%</option>
-            <option value="60">&lt;= 60%</option>
-            <option value="70">&lt;= 70%</option>
+            <option value="Aprobado">Aprobado</option>
+            <option value="Desaprobado">Desaprobado</option>
+            <option value="Pendiente">Pendiente</option>
           </select>
         </div>
       </div>
 
       {/* Resultados */}
-      {isLoading ? (
+      {!materiaId || !cohorteId ? (
+        <div className="text-center py-12 bg-white rounded-lg border border-slate-200 text-slate-500">
+          Ingrese materia y cohorte para consultar el monitor.
+        </div>
+      ) : isLoading ? (
         <div className="text-slate-500">Cargando datos del monitor...</div>
       ) : isError ? (
         <div className="text-red-500">Error al cargar datos del monitor.</div>
@@ -65,33 +85,32 @@ export const MonitorSeguimientoPage = () => {
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Alumno</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Padrón</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Comisión</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Regional</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Avance</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actividad</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nota</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Importado</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {monitorItems.map(item => (
-                <tr key={`${item.padron_id}-${item.comision_id}`} className="hover:bg-slate-50">
+              {monitorItems.map((item, idx) => (
+                <tr key={`${item.padron_id}-${item.actividad}-${idx}`} className="hover:bg-slate-50">
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                     {item.apellido}, {item.nombre}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.padron_id}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.comision_id}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.regional}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.actividad}</td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <span className="text-sm text-gray-900 mr-2">{item.porcentaje_cumplimiento}%</span>
-                      <div className="w-24 bg-gray-200 rounded-full h-2">
-                        <div 
-                          className={`h-2 rounded-full ${
-                            item.porcentaje_cumplimiento < 50 ? 'bg-red-500' : 
-                            item.porcentaje_cumplimiento < 70 ? 'bg-yellow-500' : 'bg-green-500'
-                          }`} 
-                          style={{ width: `${item.porcentaje_cumplimiento}%` }}
-                        ></div>
-                      </div>
-                    </div>
+                    <span className={`inline-flex rounded-full px-2 text-xs font-semibold leading-5 ${
+                      item.estado === 'Aprobado' ? 'bg-green-100 text-green-800' :
+                      item.estado === 'Desaprobado' ? 'bg-red-100 text-red-800' :
+                      'bg-yellow-100 text-yellow-800'
+                    }`}>
+                      {item.estado}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.nota ?? '—'}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {item.importado_at ? new Date(item.importado_at).toLocaleDateString() : '—'}
                   </td>
                 </tr>
               ))}
@@ -100,7 +119,7 @@ export const MonitorSeguimientoPage = () => {
         </div>
       ) : (
         <div className="text-center py-12 bg-white rounded-lg border border-slate-200 text-slate-500">
-          No se encontraron alumnos con los filtros seleccionados.
+          No se encontraron registros con los filtros seleccionados.
         </div>
       )}
     </div>
