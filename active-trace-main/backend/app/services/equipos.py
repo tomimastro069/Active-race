@@ -284,11 +284,24 @@ class EquiposService:
 
         return updated_assignments
 
-    async def obtener_mis_equipos(self, usuario_id: UUID) -> List[Asignacion]:
+    async def obtener_mis_equipos(self, usuario_id: UUID) -> List[Any]:
         """
-        Retorna las asignaciones correspondientes al usuario especificado.
+        Retorna las asignaciones correspondientes al usuario especificado con información enriquecida.
         """
-        query = select(Asignacion).where(
+        from app.models.materia import Materia
+        from app.models.cohorte import Cohorte
+        
+        query = select(
+            Asignacion,
+            Usuario.email.label("usuario_nombre"),
+            Rol.nombre.label("rol_nombre"),
+            Materia.nombre.label("materia_nombre"),
+            Cohorte.nombre.label("cohorte_nombre")
+        ).join(Usuario, Usuario.id == Asignacion.usuario_id)\
+         .join(Rol, Rol.id == Asignacion.rol_id)\
+         .outerjoin(Materia, Materia.id == Asignacion.materia_id)\
+         .outerjoin(Cohorte, Cohorte.id == Asignacion.cohorte_id)\
+         .where(
             and_(
                 Asignacion.usuario_id == usuario_id,
                 Asignacion.tenant_id == self.tenant_id,
@@ -296,7 +309,19 @@ class EquiposService:
             )
         )
         res = await self.db.execute(query)
-        return list(res.scalars().all())
+        rows = res.all()
+
+        enriched_assignments = []
+        for row in rows:
+            asig = row.Asignacion
+            # Monkey patch para from_attributes de pydantic
+            setattr(asig, 'usuario_nombre', row.usuario_nombre)
+            setattr(asig, 'rol_nombre', row.rol_nombre)
+            setattr(asig, 'materia_nombre', row.materia_nombre)
+            setattr(asig, 'cohorte_nombre', row.cohorte_nombre)
+            enriched_assignments.append(asig)
+            
+        return enriched_assignments
 
     async def exportar_equipo(
         self,

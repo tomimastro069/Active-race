@@ -70,3 +70,16 @@ async def update_usuario(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e)
         )
+
+@router.get("/roles", response_model=List[dict])
+async def list_roles(
+    current_user: CurrentUser = Depends(require_permission("usuarios:gestionar")),
+    db: AsyncSession = Depends(get_db)
+):
+    from sqlalchemy import select
+    from app.models.rol import Rol
+    result = await db.execute(
+        select(Rol).where(Rol.tenant_id == current_user.tenant_id, Rol.deleted_at.is_(None))
+    )
+    roles = result.scalars().all()
+    return [{"id": r.id, "nombre": r.nombre, "descripcion": r.descripcion} for r in roles]

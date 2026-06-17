@@ -24,7 +24,7 @@ export const Layout = () => {
             Dashboard
           </Link>
           
-          {(user?.roles?.includes('PROFESOR') || user?.roles?.includes('TUTOR')) && (
+          {(user?.roles?.includes('PROFESOR') || user?.roles?.includes('TUTOR') || user?.roles?.includes('COORDINADOR') || user?.roles?.includes('ADMIN')) && (
             <>
               <div className="text-xs uppercase text-slate-500 font-semibold mb-2 mt-6">Académico Docente</div>
               <Link to="/comisiones" className="block px-4 py-2 rounded text-slate-300 hover:bg-slate-800 hover:text-white transition-colors">
@@ -32,6 +32,9 @@ export const Layout = () => {
               </Link>
               <Link to="/monitor-seguimiento" className="block px-4 py-2 rounded text-slate-300 hover:bg-slate-800 hover:text-white transition-colors">
                 Monitor Seguimiento
+              </Link>
+              <Link to="/padron" className="block px-4 py-2 rounded text-slate-300 hover:bg-slate-800 hover:text-white transition-colors">
+                Importar Padrón
               </Link>
             </>
           )}

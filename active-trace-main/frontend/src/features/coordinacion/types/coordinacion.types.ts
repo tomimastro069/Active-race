@@ -15,6 +15,10 @@ export interface Asignacion {
   estado_vigencia: string;
   created_at: string;
   updated_at: string;
+  usuario_nombre?: string | null;
+  rol_nombre?: string | null;
+  materia_nombre?: string | null;
+  cohorte_nombre?: string | null;
 }
 
 export interface AsignacionMasivaPayload {
@@ -138,4 +142,43 @@ export interface MonitorFiltros {
   estado_actividad?: string;
   desde_fecha?: string;
   hasta_fecha?: string;
+}
+
+// --- Tipos de Estructura Académica y Roles ---
+
+export interface UsuarioSimple {
+  id: string;
+  nombre: string;
+  apellidos: string;
+  email: string;
+}
+
+export interface MateriaSimple {
+  id: string;
+  codigo: string;
+  nombre: string;
+}
+
+export interface CohorteSimple {
+  id: string;
+  nombre: string;
+  anio: number;
+}
+
+export interface RolSimple {
+  id: string;
+  nombre: string;
+  descripcion?: string | null;
+}
+
+export interface AsignacionCreatePayload {
+  usuario_id: string;
+  rol_id: string;
+  materia_id?: string | null;
+  carrera_id?: string | null;
+  cohorte_id?: string | null;
+  comisiones?: string[] | null;
+  responsable_id?: string | null;
+  desde: string;
+  hasta?: string | null;
 }

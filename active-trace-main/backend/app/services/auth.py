@@ -93,13 +93,18 @@ class AuthService:
     async def _generate_token_pair(self, user: Usuario, familia_id: Optional[str] = None) -> Token:
         settings = Settings()
         
+        from app.repositories.asignacion import AsignacionRepository
+        from app.models.asignacion import Asignacion
+        repo = AsignacionRepository(Asignacion, self.db, user.tenant_id)
+        roles = await repo.get_active_roles(user.id)
+        
         # Access token
         payload = {
             "sub": str(user.id),
             "user_id": str(user.id),
             "tenant_id": str(user.tenant_id),
             "email": user.email,
-            "roles": [] # se resolverá en RBAC
+            "roles": roles
         }
         access_token = create_access_token(payload, settings.ACCESS_TOKEN_EXPIRE_MINUTES)
         

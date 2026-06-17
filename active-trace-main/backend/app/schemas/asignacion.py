@@ -42,6 +42,10 @@ class AsignacionResponse(AsignacionBase):
     estado_vigencia: str
     created_at: datetime
     updated_at: datetime
+    usuario_nombre: Optional[str] = None
+    rol_nombre: Optional[str] = None
+    materia_nombre: Optional[str] = None
+    cohorte_nombre: Optional[str] = None
 
     model_config = ConfigDict(
         from_attributes=True
