@@ -67,5 +67,24 @@ export const comunicacionesService = {
   getLoteStatus: async (loteId: string) => {
     const response = await api.get<LoteResumen>(`/comunicaciones/lotes/${loteId}`);
     return response.data;
-  }
+  },
+
+  // Cola de aprobación (F3.3, HU-12): lista comunicaciones, opcionalmente por estado.
+  listar: async (estado?: EstadoComunicacion) => {
+    const params = estado ? { estado } : undefined;
+    const response = await api.get<ComunicacionItem[]>('/comunicaciones/', { params });
+    return response.data;
+  },
+
+  // Aprobar un lote completo: pasa de Pendiente a Enviando (RN-17).
+  aprobarLote: async (loteId: string) => {
+    const response = await api.post(`/comunicaciones/lotes/${loteId}/aprobar`, {});
+    return response.data;
+  },
+
+  // Cancelar un lote completo: pasa a Cancelado (RN-17).
+  cancelarLote: async (loteId: string) => {
+    const response = await api.post(`/comunicaciones/lotes/${loteId}/cancelar`, {});
+    return response.data;
+  },
 };
