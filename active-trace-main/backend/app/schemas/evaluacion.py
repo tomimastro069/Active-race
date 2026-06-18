@@ -1,6 +1,6 @@
 from pydantic import BaseModel, ConfigDict
 from typing import Optional, List
-from datetime import datetime
+from datetime import datetime, date
 from uuid import UUID
 from app.models.evaluacion import EvaluacionTipoEnum, EstadoReservaEnum
 
@@ -20,12 +20,14 @@ class ReservaResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 class EvaluacionResumenResponse(BaseModel):
-    """Listado de convocatorias con contadores (HU-31)."""
+    """Listado de convocatorias/evaluaciones con contadores (HU-31, HU-24)."""
     id: UUID
     materia_id: UUID
     cohorte_id: UUID
     tipo: EvaluacionTipoEnum
     instancia: str
+    titulo: Optional[str] = None
+    fecha: Optional[date] = None
     dias_disponibles: int
     cupos_totales: int
     convocados: int

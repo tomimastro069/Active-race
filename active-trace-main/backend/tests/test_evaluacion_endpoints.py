@@ -250,3 +250,35 @@ async def test_agenda_y_registro_academico(db_session, evaluacion_api_setup, _ov
         assert len(registro.json()) == 1
         assert registro.json()[0]["nota_final"] == "8"
     app.dependency_overrides.clear()
+
+
+@pytest.mark.asyncio
+async def test_fechas_y_cronograma(db_session, evaluacion_api_setup, _override_admin):
+    """HU-24: alta con fecha/título, listado por fecha y cronograma embebible."""
+    setup = evaluacion_api_setup
+    _override_admin(setup)
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
+        payload = {
+            "materia_id": str(setup["materia_id"]),
+            "cohorte_id": str(setup["cohorte_id"]),
+            "tipo": "Parcial",
+            "instancia": "1",
+            "titulo": "Primer Parcial",
+            "fecha": "2026-09-15",
+            "dias_disponibles": 1,
+            "cupos_totales": 30,
+        }
+        res = await ac.post("/api/v1/admin/evaluaciones/", json=payload, headers={"Authorization": "Bearer mock"})
+        assert res.status_code == 201
+        assert res.json()["fecha"] == "2026-09-15"
+        assert res.json()["titulo"] == "Primer Parcial"
+
+        # Cronograma embebible (HU-24)
+        crono = await ac.get(
+            f"/api/v1/admin/evaluaciones/cronograma/{setup['materia_id']}",
+            headers={"Authorization": "Bearer mock"},
+        )
+        assert crono.status_code == 200
+        assert "Primer Parcial" in crono.text
+        assert "15/09/2026" in crono.text
+    app.dependency_overrides.clear()

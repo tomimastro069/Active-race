@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.responses import HTMLResponse
 from sqlalchemy.ext.asyncio import AsyncSession
-from datetime import datetime
+from datetime import datetime, date
 from typing import List, Optional
 from uuid import UUID
 
@@ -23,6 +24,8 @@ class EvaluacionCreate(BaseModel):
     cohorte_id: UUID
     tipo: EvaluacionTipoEnum
     instancia: str
+    titulo: Optional[str] = None
+    fecha: Optional[date] = None
     dias_disponibles: int = 1
     cupos_totales: int = 10
 
@@ -32,9 +35,11 @@ class EvaluacionResponse(BaseModel):
     cohorte_id: UUID
     tipo: EvaluacionTipoEnum
     instancia: str
+    titulo: Optional[str] = None
+    fecha: Optional[date] = None
     dias_disponibles: int
     cupos_totales: int
-    
+
     model_config = ConfigDict(from_attributes=True)
 
 @router.post("/admin/evaluaciones/", response_model=EvaluacionResponse, status_code=status.HTTP_201_CREATED)
@@ -49,6 +54,8 @@ async def create_evaluacion(
         cohorte_id=eval_in.cohorte_id,
         tipo=eval_in.tipo,
         instancia=eval_in.instancia,
+        titulo=eval_in.titulo,
+        fecha=eval_in.fecha,
         dias_disponibles=eval_in.dias_disponibles,
         cupos_totales=eval_in.cupos_totales
     )
@@ -62,12 +69,43 @@ async def listar_evaluaciones(
     tipo: Optional[EvaluacionTipoEnum] = None,
     materia_id: Optional[UUID] = None,
     cohorte_id: Optional[UUID] = None,
+    orden: Optional[str] = None,
     db: AsyncSession = Depends(get_db),
     current_user: CurrentUser = Depends(require_permission("encuentros:gestionar")),
 ):
-    """Lista convocatorias con Convocados / Reservas activas / Cupos disponibles (HU-31)."""
+    """Tabla lineal / calendario de evaluaciones con contadores (HU-24, HU-31).
+
+    ``orden=fecha`` devuelve las instancias ordenadas por fecha académica (calendario).
+    """
     crud = CRUDEvaluacion(db, current_user.tenant_id)
-    return await crud.listar_evaluaciones(tipo=tipo, materia_id=materia_id, cohorte_id=cohorte_id)
+    return await crud.listar_evaluaciones(
+        tipo=tipo, materia_id=materia_id, cohorte_id=cohorte_id,
+        orden_por_fecha=(orden == "fecha"),
+    )
+
+
+@router.get("/admin/evaluaciones/cronograma/{materia_id}", response_class=HTMLResponse)
+async def cronograma_evaluaciones(
+    materia_id: UUID,
+    db: AsyncSession = Depends(get_db),
+    current_user: CurrentUser = Depends(require_permission("encuentros:gestionar")),
+):
+    """Genera el cronograma de evaluaciones embebible en el LMS (HU-24)."""
+    crud = CRUDEvaluacion(db, current_user.tenant_id)
+    items = await crud.listar_evaluaciones(materia_id=materia_id, orden_por_fecha=True)
+
+    html = ['<div class="cronograma-evaluaciones">', '  <h3>Cronograma de Evaluaciones</h3>']
+    if not items:
+        html.append('  <p>No hay evaluaciones programadas.</p>')
+    else:
+        html.append('  <ul>')
+        for ev in items:
+            fecha_str = ev["fecha"].strftime("%d/%m/%Y") if ev["fecha"] else "Fecha a confirmar"
+            titulo = ev["titulo"] or ev["instancia"]
+            html.append(f'    <li><strong>{ev["tipo"].value} {ev["instancia"]}</strong> — {titulo}: {fecha_str}</li>')
+        html.append('  </ul>')
+    html.append('</div>')
+    return "\n".join(html)
 
 @router.post(
     "/admin/evaluaciones/{evaluacion_id}/convocados",

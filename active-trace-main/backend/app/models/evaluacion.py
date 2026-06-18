@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Integer, ForeignKey, Enum, DateTime, UniqueConstraint
+from sqlalchemy import Column, String, Integer, ForeignKey, Enum, DateTime, Date, UniqueConstraint
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 import enum
@@ -22,6 +22,8 @@ class Evaluacion(Base, TimestampedTenant):
     cohorte_id = Column(UUID(as_uuid=True), ForeignKey("cohortes.id", ondelete="CASCADE"), nullable=False)
     tipo = Column(Enum(EvaluacionTipoEnum, name="evaluacion_tipo_enum"), nullable=False)
     instancia = Column(String(255), nullable=False)
+    titulo = Column(String(255), nullable=True)
+    fecha = Column(Date, nullable=True)
     dias_disponibles = Column(Integer, nullable=False, default=1)
     cupos_totales = Column(Integer, nullable=False, default=10)
 

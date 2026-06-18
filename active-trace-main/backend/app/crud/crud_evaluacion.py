@@ -74,8 +74,12 @@ class CRUDEvaluacion:
         tipo: Optional[EvaluacionTipoEnum] = None,
         materia_id: Optional[UUID] = None,
         cohorte_id: Optional[UUID] = None,
+        orden_por_fecha: bool = False,
     ) -> List[dict]:
-        """Lista evaluaciones del tenant con contadores de convocados/reservas/cupos (HU-31)."""
+        """Lista evaluaciones del tenant con contadores de convocados/reservas/cupos (HU-31).
+
+        Con ``orden_por_fecha`` ordena por la fecha académica (vista calendario, HU-24).
+        """
         stmt = select(Evaluacion).where(
             Evaluacion.tenant_id == self.tenant_id,
             Evaluacion.deleted_at.is_(None),
@@ -86,7 +90,8 @@ class CRUDEvaluacion:
             stmt = stmt.where(Evaluacion.materia_id == materia_id)
         if cohorte_id is not None:
             stmt = stmt.where(Evaluacion.cohorte_id == cohorte_id)
-        result = await self.db.execute(stmt.order_by(Evaluacion.created_at.desc()))
+        orden = Evaluacion.fecha.asc() if orden_por_fecha else Evaluacion.created_at.desc()
+        result = await self.db.execute(stmt.order_by(orden))
         evaluaciones = result.scalars().all()
 
         resumenes: List[dict] = []
@@ -110,6 +115,8 @@ class CRUDEvaluacion:
                 "cohorte_id": ev.cohorte_id,
                 "tipo": ev.tipo,
                 "instancia": ev.instancia,
+                "titulo": ev.titulo,
+                "fecha": ev.fecha,
                 "dias_disponibles": ev.dias_disponibles,
                 "cupos_totales": ev.cupos_totales,
                 "convocados": convocados or 0,
