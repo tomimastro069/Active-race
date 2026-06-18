@@ -36,6 +36,12 @@ export const Layout = () => {
               <Link to="/padron" className="block px-4 py-2 rounded text-slate-300 hover:bg-slate-800 hover:text-white transition-colors">
                 Importar Padrón
               </Link>
+              <Link to="/encuentros" className="block px-4 py-2 rounded text-slate-300 hover:bg-slate-800 hover:text-white transition-colors">
+                Encuentros
+              </Link>
+              <Link to="/guardias" className="block px-4 py-2 rounded text-slate-300 hover:bg-slate-800 hover:text-white transition-colors">
+                Mis Guardias
+              </Link>
             </>
           )}
 

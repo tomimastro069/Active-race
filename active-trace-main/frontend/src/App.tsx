@@ -16,6 +16,8 @@ import { MonitorCoordinacionPage } from '@/features/coordinacion/pages/MonitorCo
 import { UsuariosPage } from '@/features/coordinacion/pages/UsuariosPage';
 import { PerfilPage } from '@/features/perfil/pages/PerfilPage';
 import { InboxPage } from '@/features/mensajeria/pages/InboxPage';
+import { EncuentrosPage } from '@/features/encuentros/pages/EncuentrosPage';
+import { GuardiasPage } from '@/features/guardias/pages/GuardiasPage';
 import './index.css';
 
 
@@ -49,6 +51,8 @@ function App() {
                 <Route path="/avisos" element={<AvisosPage />} />
                 <Route path="/tareas" element={<TareasPage />} />
                 <Route path="/monitor-coordinacion" element={<MonitorCoordinacionPage />} />
+                <Route path="/encuentros" element={<EncuentrosPage />} />
+                <Route path="/guardias" element={<GuardiasPage />} />
                 <Route path="/perfil" element={<PerfilPage />} />
                 <Route path="/inbox" element={<InboxPage />} />
                 <Route path="/" element={<Navigate to="/dashboard" replace />} />
