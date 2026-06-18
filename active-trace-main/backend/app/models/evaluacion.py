@@ -30,6 +30,7 @@ class Evaluacion(Base, TimestampedTenant):
     cohorte = relationship("Cohorte")
     reservas = relationship("ReservaEvaluacion", back_populates="evaluacion", cascade="all, delete-orphan")
     resultados = relationship("ResultadoEvaluacion", back_populates="evaluacion", cascade="all, delete-orphan")
+    convocados = relationship("ConvocadoEvaluacion", back_populates="evaluacion", cascade="all, delete-orphan")
 
 class ReservaEvaluacion(Base, TimestampedTenant):
     __tablename__ = "reservas_evaluacion"
@@ -60,4 +61,23 @@ class ResultadoEvaluacion(Base, TimestampedTenant):
 
     # Relationships
     evaluacion = relationship("Evaluacion", back_populates="resultados")
+    alumno = relationship("Usuario")
+
+class ConvocadoEvaluacion(Base, TimestampedTenant):
+    """Alumno elegible (convocado) para una instancia de evaluación/coloquio.
+
+    Es el padrón de coloquio (HU-30), separado del padrón general: define a
+    quiénes corresponde convocar antes de que reserven cupo.
+    """
+    __tablename__ = "convocados_evaluacion"
+
+    evaluacion_id = Column(UUID(as_uuid=True), ForeignKey("evaluaciones.id", ondelete="CASCADE"), nullable=False)
+    alumno_id = Column(UUID(as_uuid=True), ForeignKey("usuario.id", ondelete="CASCADE"), nullable=False)
+
+    __table_args__ = (
+        UniqueConstraint('evaluacion_id', 'alumno_id', name='uq_convocado_alumno_evaluacion'),
+    )
+
+    # Relationships
+    evaluacion = relationship("Evaluacion", back_populates="convocados")
     alumno = relationship("Usuario")
