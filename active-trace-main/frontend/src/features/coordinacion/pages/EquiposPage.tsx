@@ -31,22 +31,22 @@ export const EquiposPage = () => {
     queryFn: equiposService.getMisEquipos,
   });
 
-  const { data: usuarios, isLoading: loadingUsers } = useQuery({
+  const { data: usuarios } = useQuery({
     queryKey: ['admin-usuarios'],
     queryFn: equiposService.getUsuarios,
   });
 
-  const { data: materias, isLoading: loadingMaterias } = useQuery({
+  const { data: materias } = useQuery({
     queryKey: ['admin-materias'],
     queryFn: equiposService.getMaterias,
   });
 
-  const { data: cohortes, isLoading: loadingCohortes } = useQuery({
+  const { data: cohortes } = useQuery({
     queryKey: ['admin-cohortes'],
     queryFn: equiposService.getCohortes,
   });
 
-  const { data: roles, isLoading: loadingRoles } = useQuery({
+  const { data: roles } = useQuery({
     queryKey: ['admin-roles'],
     queryFn: equiposService.getRoles,
   });
