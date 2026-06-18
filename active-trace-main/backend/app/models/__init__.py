@@ -20,6 +20,7 @@ from app.models.evaluacion import Evaluacion, ReservaEvaluacion, ResultadoEvalua
 from app.models.aviso import Aviso, AcknowledgmentAviso, AlcanceEnum
 from app.models.tarea import Tarea, ComentarioTarea, EstadoTareaEnum
 from app.models.mensajeria import Thread, Message
+from app.models.programa import ProgramaMateria
 
 __all__ = [
     'TimestampedTenant', 'Base', 'Tenant', 'Usuario', 'TokenRefresco',
@@ -33,4 +34,5 @@ __all__ = [
     'Aviso', 'AcknowledgmentAviso', 'AlcanceEnum',
     'Tarea', 'ComentarioTarea', 'EstadoTareaEnum',
     'Thread', 'Message',
+    'ProgramaMateria',
 ]
