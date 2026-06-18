@@ -42,6 +42,9 @@ export const Layout = () => {
               <Link to="/guardias" className="block px-4 py-2 rounded text-slate-300 hover:bg-slate-800 hover:text-white transition-colors">
                 Mis Guardias
               </Link>
+              <Link to="/avisos-bandeja" className="block px-4 py-2 rounded text-slate-300 hover:bg-slate-800 hover:text-white transition-colors">
+                Avisos
+              </Link>
             </>
           )}
 
@@ -56,6 +59,9 @@ export const Layout = () => {
               </Link>
               <Link to="/avisos" className="block px-4 py-2 rounded text-slate-300 hover:bg-slate-800 hover:text-white transition-colors">
                 Avisos
+              </Link>
+              <Link to="/aprobacion-comunicaciones" className="block px-4 py-2 rounded text-slate-300 hover:bg-slate-800 hover:text-white transition-colors">
+                Aprobar Envíos
               </Link>
               <Link to="/tareas" className="block px-4 py-2 rounded text-slate-300 hover:bg-slate-800 hover:text-white transition-colors">
                 Tareas Internas
